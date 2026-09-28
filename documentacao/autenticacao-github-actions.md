@@ -34,7 +34,7 @@ exatamente disso que dependemos para o Pages publicar.
 │                                     │
 │  Settings > Secrets and variables   │
 │    > Actions                        │
-│    TRAINING_ANDRADASDEV ← o valor   │
+│    GHUB_ANDRADASDEV ← o valor       │
 └──────────────┬──────────────────────┘
                │  git push autenticado com o token
                v
@@ -132,12 +132,12 @@ O token vai para o repositório **de código**, que é quem precisa dele.
 
    | Campo | Valor |
    |---|---|
-   | **Name** | `TRAINING_ANDRADASDEV` |
+   | **Name** | `GHUB_ANDRADASDEV` |
    | **Secret** | o valor `github_pat_...` copiado no Passo 1 |
 
 3. **Add secret**.
 
-> O nome precisa ser exatamente `TRAINING_ANDRADASDEV` — é o que o workflow procura,
+> O nome precisa ser exatamente `GHUB_ANDRADASDEV` — é o que o workflow procura,
 > em `.github/workflows/build.yml`.
 >
 > Depois de salvo, o valor **não pode mais ser lido** por ninguém, nem por
@@ -154,7 +154,7 @@ O trecho relevante de `.github/workflows/build.yml`, no repositório de código:
 ```yaml
 - name: Enviar artefatos para andradasdev/github
   env:
-    PUBLISH_TOKEN: ${{ secrets.TRAINING_ANDRADASDEV }}
+    PUBLISH_TOKEN: ${{ secrets.GHUB_ANDRADASDEV }}
   run: |
     git clone --depth 1 \
       "https://x-access-token:${PUBLISH_TOKEN}@github.com/andradasdev/github.git" \
@@ -171,7 +171,7 @@ autenticação por token via HTTPS. O que autentica de fato é a senha — o tok
 Qualquer nome de usuário funcionaria, mas use este por convenção.
 
 **O secret entra por `env:`, nunca interpolado no corpo do script.** Escrever
-`if [ -z "${{ secrets.TRAINING_ANDRADASDEV }}" ]` faz o valor virar parte do texto do
+`if [ -z "${{ secrets.GHUB_ANDRADASDEV }}" ]` faz o valor virar parte do texto do
 comando, o que quebra com caracteres especiais e é má prática de segurança. O
 certo é declarar em `env:` e usar `${PUBLISH_TOKEN}`.
 
@@ -225,7 +225,7 @@ precisa ser refeito.
 | `remote: Permission ... denied` / `403` | Token pendente de aprovação na organização | Passo 2, fila **Pending requests** |
 | `403` com o token já aprovado | `Resource owner` ficou como a conta pessoal | Recrie o token com owner `andradasdev` |
 | `403` e o token está correto | Faltou **Contents: Read and write** | Edite as permissões do token |
-| `could not read Username for 'https://github.com'` | O secret não existe ou o nome está diferente | Confira se é exatamente `TRAINING_ANDRADASDEV` |
+| `could not read Username for 'https://github.com'` | O secret não existe ou o nome está diferente | Confira se é exatamente `GHUB_ANDRADASDEV` |
 | `Repository not found` | O token não inclui o repositório `github` | **Repository access** → selecione `github` |
 | Push funciona, mas o Pages não publica | Source do Pages não está em *GitHub Actions* | Passo 5 |
 | Tudo verde, site com PDF velho | O passo detectou artefatos idênticos e não commitou | Comportamento esperado |
